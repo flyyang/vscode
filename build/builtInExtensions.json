@@ -43,5 +43,37 @@
 			},
 			"publisherDisplayName": "Microsoft"
 		}
+	},
+	{
+		"name": "dbaeumer.vscode-eslint",
+		"version": "latest"
+	},
+	{
+		"name": "eamodio.gitlens",
+		"version": "latest"
+	},
+	{
+		"name": "esbenp.prettier-vscode",
+		"version": "latest"
+	},
+	{
+		"name": "PKief.material-icon-theme",
+		"version": "latest"
+	},
+	{
+		"name": "vscodevim.vim",
+		"version": "latest"
+	},
+	{
+		"name": "octref.vetur",
+		"version": "latest"
+	},
+	{
+		"name": "DavidAnson.vscode-markdownlint",
+		"version": "latest"
+	},
+	{
+		"name": "CoenraadS.bracket-pair-colorizer-2",
+		"version": "latest"
 	}
 ]
