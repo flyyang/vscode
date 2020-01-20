@@ -198,7 +198,6 @@ export class TestTextFileService extends NativeTextFileService {
 		@IUntitledTextEditorService untitledTextEditorService: IUntitledTextEditorService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IModeService modeService: IModeService,
 		@IModelService modelService: IModelService,
 		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
 		@IHistoryService historyService: IHistoryService,
@@ -208,14 +207,14 @@ export class TestTextFileService extends NativeTextFileService {
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
 		@IProductService productService: IProductService,
 		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService,
-		@ITextModelService textModelService: ITextModelService
+		@ITextModelService textModelService: ITextModelService,
+		@ICodeEditorService codeEditorService: ICodeEditorService
 	) {
 		super(
 			fileService,
 			untitledTextEditorService,
 			lifecycleService,
 			instantiationService,
-			modeService,
 			modelService,
 			environmentService,
 			historyService,
@@ -225,7 +224,8 @@ export class TestTextFileService extends NativeTextFileService {
 			textResourceConfigurationService,
 			productService,
 			filesConfigurationService,
-			textModelService
+			textModelService,
+			codeEditorService
 		);
 	}
 
@@ -413,7 +413,7 @@ export class TestFileDialogService implements IFileDialogService {
 	pickWorkspaceAndOpen(_options: IPickAndOpenOptions): Promise<any> {
 		return Promise.resolve(0);
 	}
-	pickFileToSave(_options: ISaveDialogOptions): Promise<URI | undefined> {
+	pickFileToSave(defaultUri: URI, availableFileSystems?: string[]): Promise<URI | undefined> {
 		return Promise.resolve(undefined);
 	}
 	showSaveDialog(_options: ISaveDialogOptions): Promise<URI | undefined> {
@@ -1240,6 +1240,7 @@ export class TestCodeEditorService implements ICodeEditorService {
 	resolveDecorationOptions(_typeKey: string, _writable: boolean): IModelDecorationOptions { return Object.create(null); }
 	setTransientModelProperty(_model: ITextModel, _key: string, _value: any): void { }
 	getTransientModelProperty(_model: ITextModel, _key: string) { }
+	getTransientModelProperties(_model: ITextModel) { return undefined; }
 	getActiveCodeEditor(): ICodeEditor | null { return null; }
 	openCodeEditor(_input: IResourceInput, _source: ICodeEditor, _sideBySide?: boolean): Promise<ICodeEditor | null> { return Promise.resolve(null); }
 }
