@@ -31,7 +31,7 @@ import { LogLevel } from 'vs/platform/log/common/log';
 import { IMarkerData } from 'vs/platform/markers/common/markers';
 import { IProgressOptions, IProgressStep } from 'vs/platform/progress/common/progress';
 import * as quickInput from 'vs/platform/quickinput/common/quickInput';
-import { RemoteAuthorityResolverErrorCode, ResolverResult } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { RemoteAuthorityResolverErrorCode, ResolverResult, TunnelDescription } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import * as statusbar from 'vs/workbench/services/statusbar/common/statusbar';
 import { ClassifiedEvent, GDPRClassification, StrictPropertyCheck } from 'vs/platform/telemetry/common/gdprTypings';
 import { ITelemetryInfo } from 'vs/platform/telemetry/common/telemetry';
@@ -785,8 +785,10 @@ export interface MainThreadWindowShape extends IDisposable {
 export interface MainThreadTunnelServiceShape extends IDisposable {
 	$openTunnel(tunnelOptions: TunnelOptions): Promise<TunnelDto | undefined>;
 	$closeTunnel(remote: { host: string, port: number }): Promise<void>;
+	$getTunnels(): Promise<TunnelDescription[]>;
 	$registerCandidateFinder(): Promise<void>;
 	$setTunnelProvider(): Promise<void>;
+	$setCandidateFilter(): Promise<void>;
 }
 
 // -- extension host
@@ -1067,25 +1069,22 @@ export interface IWorkspaceSymbolsDto extends IdObject {
 	symbols: IWorkspaceSymbolDto[];
 }
 
-export interface IResourceFileEditDto {
+export interface IWorkspaceFileEditDto {
 	oldUri?: UriComponents;
 	newUri?: UriComponents;
-	options?: {
-		overwrite?: boolean;
-		ignoreIfExists?: boolean;
-		ignoreIfNotExists?: boolean;
-		recursive?: boolean;
-	};
+	options?: modes.WorkspaceFileEditOptions
+	metadata?: modes.WorkspaceEditMetadata;
 }
 
-export interface IResourceTextEditDto {
+export interface IWorkspaceTextEditDto {
 	resource: UriComponents;
+	edit: modes.TextEdit;
 	modelVersionId?: number;
-	edits: modes.TextEdit[];
+	metadata?: modes.WorkspaceEditMetadata;
 }
 
 export interface IWorkspaceEditDto {
-	edits: Array<IResourceFileEditDto | IResourceTextEditDto>;
+	edits: Array<IWorkspaceFileEditDto | IWorkspaceTextEditDto>;
 
 	// todo@joh reject should go into rename
 	rejectReason?: string;
@@ -1094,11 +1093,11 @@ export interface IWorkspaceEditDto {
 export function reviveWorkspaceEditDto(data: IWorkspaceEditDto | undefined): modes.WorkspaceEdit {
 	if (data && data.edits) {
 		for (const edit of data.edits) {
-			if (typeof (<IResourceTextEditDto>edit).resource === 'object') {
-				(<IResourceTextEditDto>edit).resource = URI.revive((<IResourceTextEditDto>edit).resource);
+			if (typeof (<IWorkspaceTextEditDto>edit).resource === 'object') {
+				(<IWorkspaceTextEditDto>edit).resource = URI.revive((<IWorkspaceTextEditDto>edit).resource);
 			} else {
-				(<IResourceFileEditDto>edit).newUri = URI.revive((<IResourceFileEditDto>edit).newUri);
-				(<IResourceFileEditDto>edit).oldUri = URI.revive((<IResourceFileEditDto>edit).oldUri);
+				(<IWorkspaceFileEditDto>edit).newUri = URI.revive((<IWorkspaceFileEditDto>edit).newUri);
+				(<IWorkspaceFileEditDto>edit).oldUri = URI.revive((<IWorkspaceFileEditDto>edit).oldUri);
 			}
 		}
 	}
@@ -1421,8 +1420,10 @@ export interface MainThreadThemingShape extends IDisposable {
 
 export interface ExtHostTunnelServiceShape {
 	$findCandidatePorts(): Promise<{ host: string, port: number, detail: string }[]>;
+	$filterCandidates(candidates: { host: string, port: number, detail: string }[]): Promise<boolean[]>;
 	$forwardPort(tunnelOptions: TunnelOptions): Promise<TunnelDto> | undefined;
 	$closeTunnel(remote: { host: string, port: number }): Promise<void>;
+	$onDidTunnelsChange(): Promise<void>;
 }
 
 // --- proxy identifiers
