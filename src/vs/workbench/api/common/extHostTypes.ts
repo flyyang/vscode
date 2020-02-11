@@ -1356,10 +1356,19 @@ export enum CompletionItemTag {
 	Deprecated = 1,
 }
 
+export interface CompletionItemLabel {
+	name: string;
+	signature?: string;
+	qualifier?: string;
+	type?: string;
+}
+
+
 @es5ClassCompat
 export class CompletionItem implements vscode.CompletionItem {
 
 	label: string;
+	label2?: CompletionItemLabel;
 	kind?: CompletionItemKind;
 	tags?: CompletionItemTag[];
 	detail?: string;
@@ -1383,6 +1392,7 @@ export class CompletionItem implements vscode.CompletionItem {
 	toJSON(): any {
 		return {
 			label: this.label,
+			label2: this.label2,
 			kind: this.kind && CompletionItemKind[this.kind],
 			detail: this.detail,
 			documentation: this.documentation,
@@ -1399,7 +1409,6 @@ export class CompletionItem implements vscode.CompletionItem {
 export class CompletionList {
 
 	isIncomplete?: boolean;
-	isDetailsResolved?: boolean;
 	items: vscode.CompletionItem[];
 
 	constructor(items: vscode.CompletionItem[] = [], isIncomplete: boolean = false) {
@@ -1829,6 +1838,7 @@ export class Task implements vscode.Task2 {
 	private static EmptyType: string = '$empty';
 
 	private __id: string | undefined;
+	private __deprecated: boolean = false;
 
 	private _definition: vscode.TaskDefinition;
 	private _scope: vscode.TaskScope.Global | vscode.TaskScope.Workspace | vscode.WorkspaceFolder | undefined;
@@ -1853,6 +1863,7 @@ export class Task implements vscode.Task2 {
 			this._source = this.source = arg3;
 			this.execution = arg4;
 			problemMatchers = arg5;
+			this.__deprecated = true;
 		} else if (arg2 === TaskScope.Global || arg2 === TaskScope.Workspace) {
 			this.target = arg2;
 			this._name = this.name = arg3;
@@ -1887,6 +1898,10 @@ export class Task implements vscode.Task2 {
 
 	set _id(value: string | undefined) {
 		this.__id = value;
+	}
+
+	get _deprecated(): boolean {
+		return this.__deprecated;
 	}
 
 	private clear(): void {
@@ -2529,3 +2544,12 @@ export enum ColorThemeKind {
 }
 
 //#endregion Theming
+
+//#region Timeline
+
+@es5ClassCompat
+export class TimelineItem implements vscode.TimelineItem {
+	constructor(public label: string, public timestamp: number) { }
+}
+
+//#endregion Timeline
