@@ -167,6 +167,9 @@
   "bugs": {
     "url": "https://github.com/Microsoft/vscode/issues"
   },
+  "resolutions": {
+    "**/**/fsevents": "2.1.1"
+   },
   "optionalDependencies": {
     "vscode-windows-ca-certs": "0.2.0",
     "vscode-windows-registry": "1.0.2",
