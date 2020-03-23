@@ -91,5 +91,9 @@
 	{
 		"name": "CoenraadS.bracket-pair-colorizer-2",
 		"version": "latest"
+	},
+	{
+		"name": "stylelint.vscode-stylelint",
+		"version": "latest"
 	}
 ]
